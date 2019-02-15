@@ -1,10 +1,7 @@
 #pragma once
 #include <iostream>
 
-
-uint32_t test;
 typedef struct {
-	std::string type = "SD";
 	//#Data DD-MM-YYYY
 	union {
 		uint_least64_t word;
@@ -45,11 +42,36 @@ typedef struct {
 	}other;
 }str_SD;
 
+typedef struct {
+	char array[100];
+}str_M;
+
+typedef enum {
+	ERROR,
+	TYPE_ERROR,
+	WAIT,
+	M_PACK_ACCEPTED,
+	SUCCESS
+}mistakes;
+
 class cParser
 {
 public:
-	cParser();
+	cParser() { 
+		memset(&SD,0,sizeof(SD));
+		memset(&M, 0, sizeof(M));
+	};
 	~cParser();
+	mistakes line_processing(const char * const data);
+
+
+
+	char *getM() const { return (char*)M.array; }
+private:
 	str_SD SD;
+	str_M	M;
+	mistakes check_sum() { return SUCCESS; };
+	mistakes parser_SD(const char *const data);
+	mistakes parser_M(const char *const data);
 };
 
