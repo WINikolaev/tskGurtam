@@ -13,11 +13,14 @@ int main()
 	setlocale(LC_ALL, "Russian");
 	std::cout << "Задача 1" << std::endl;
 	cParser *parser = new cParser;
-	auto answer = parser->line_processing(M);
+	auto answer = parser->line_processing(SD);
 	switch (answer)
 	{
 	case WAIT :
 		std::cout << "# not found" << std::endl;
+		break;
+	case ERROR_nullpntr:
+		std::cout << "ERROR_nullpntr" << std::endl;
 		break;
 	case M_PACK_ACCEPTED: {
 		std::cout << "M_PACK_ACCEPTED: ";

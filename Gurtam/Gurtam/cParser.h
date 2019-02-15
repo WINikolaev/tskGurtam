@@ -51,8 +51,10 @@ typedef enum {
 	TYPE_ERROR,
 	WAIT,
 	M_PACK_ACCEPTED,
+	ERROR_nullpntr,
 	SUCCESS
 }mistakes;
+
 
 class cParser
 {
@@ -60,6 +62,7 @@ public:
 	cParser() { 
 		memset(&SD,0,sizeof(SD));
 		memset(&M, 0, sizeof(M));
+		//ptr_for_part_SD = &this->SD.date.word;
 	};
 	~cParser();
 	mistakes line_processing(const char * const data);
@@ -68,10 +71,27 @@ public:
 
 	char *getM() const { return (char*)M.array; }
 private:
+
+	
 	str_SD SD;
 	str_M	M;
 	mistakes check_sum() { return SUCCESS; };
 	mistakes parser_SD(const char *const data);
 	mistakes parser_M(const char *const data);
+
+
+	const void *ptr_for_part_SD[10] = {
+				&this->SD.date.word,
+				&this->SD.time.word,
+				&this->SD.latitude.lat1,
+				&this->SD.latitude.lat2,
+				&this->SD.longitude.lon1,
+				&this->SD.longitude.lon2,
+				&this->SD.other.speed,
+				&this->SD.other.course,
+				&this->SD.other.height,
+				&this->SD.other.sats
+	};
+
 };
 
