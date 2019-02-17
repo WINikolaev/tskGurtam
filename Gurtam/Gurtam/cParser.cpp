@@ -90,8 +90,37 @@ mistakes cParser::parser_SD(const char *const data)
 		this->SD.longitude.lon2 = data[cntr_it++];
 		break;
 	}
+	count_byte = ++cntr_it;
+	memset(_data, 0, sizeof(_data));
+	for (size_t i = 0; i < 100; i++)
+	{
+		if (data[cntr_it++] != ';') { continue; }
+		this->SD.other.speed = char_to_int(&data[count_byte], i);
+		break;
+	}
+	count_byte = cntr_it;
+	for (size_t i = 0; i < 100; i++)
+	{
+		if (data[cntr_it++] != ';') { continue; }
+		this->SD.other.course = char_to_int(&data[count_byte], i);
+		break;
+	}
+	count_byte = cntr_it;
+	for (size_t i = 0; i < 100; i++)
+	{
+		if (data[cntr_it++] != ';') { continue; }
+		this->SD.other.height = char_to_int(&data[count_byte], i);
+		break;
+	}
+	count_byte = cntr_it;
+	for (size_t i = 0; i < 100; i++)
+	{
+		if (data[cntr_it++] != '\r') { continue; }
+		this->SD.other.sats = char_to_int(&data[count_byte], i);
+		break;
+	}
 
-	return ERROR;
+	return SD_PACK_ACCEPTERD;
 }
 
 

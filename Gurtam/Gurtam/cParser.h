@@ -56,7 +56,8 @@ typedef enum {
 	M_PACK_ACCEPTED,
 	ERROR_nullpntr,
 	BYTE_COUNT_ERROR,
-	SUCCESS
+	SUCCESS,
+	SD_PACK_ACCEPTERD
 }mistakes;
 
 
