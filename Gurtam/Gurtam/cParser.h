@@ -1,24 +1,27 @@
 #pragma once
 #include <iostream>
 
+#define cntr_date 8
+#define cntr_time 6
+
 typedef struct {
 	//#Data DD-MM-YYYY
 	union {
-		uint_least64_t word;
+		uint32_t word;
 		struct byte {
-			uint_least64_t	day		: 6;
-			uint_least64_t	month	: 4;
-			uint_least64_t	year	: 54;
+			uint32_t	day		: 6;
+			uint32_t	month	: 5;
+			uint32_t	year	: 21;
 		}byte;
 	}date;
 	//# time HH-MM-SS
 	union {
 		uint32_t word;
 		struct byte {
-			uint32_t			:15;
+			uint32_t			: 7;
 			uint32_t	hours	: 5;
-			uint32_t	minutes : 6;
-			uint32_t	seconds : 6;
+			uint32_t	minutes : 10;
+			uint32_t	seconds : 10;
 		}byte;
 	}time;
 	//# latitude/logitude
@@ -52,6 +55,7 @@ typedef enum {
 	WAIT,
 	M_PACK_ACCEPTED,
 	ERROR_nullpntr,
+	BYTE_COUNT_ERROR,
 	SUCCESS
 }mistakes;
 
@@ -79,7 +83,8 @@ private:
 	mistakes parser_SD(const char *const data);
 	mistakes parser_M(const char *const data);
 
-
+	int   char_to_int(const char *const chr, char count);
+	float char_to_float(const char * const chr, char count);
 	const void *ptr_for_part_SD[10] = {
 				&this->SD.date.word,
 				&this->SD.time.word,

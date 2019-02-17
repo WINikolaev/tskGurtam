@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "cParser.h"
-
+#include <cstdlib>
 mistakes cParser::line_processing(const char *const data)
 {
 	if (data == nullptr) { return ERROR_nullpntr; }
@@ -20,56 +20,77 @@ mistakes cParser::line_processing(const char *const data)
 		if (!strncmp(data, "#M#", i))	{ return this->parser_M(&data[++i]); }
 		return TYPE_ERROR;
 	}
-	
 	return ERROR;
 }
 
 mistakes cParser::parser_SD(const char *const data)
 {
-	size_t state = 0x00;
-	uint_least64_t value = 0x00;
+	// можно попробовать запихивать это сразу в word 32 битный. 
+	//SD.date.byte.day = part_parsser(data, 2);
+	// it`s First iteration = 8 byte
+	size_t count_byte = 0x00;
+	size_t cntr_it	= 0x00;
+	char _data[50]{0};
+
+	for (size_t i = 0x00; i < 100; i++) // Чтобы не получился бесконечный цикл
+	{
+		if(data[cntr_it++] != ';') continue;
+		// Потому что в пакете на 9 байте
+		if (cntr_it != 9) { return BYTE_COUNT_ERROR; }
+
+		this->SD.date.byte.day = char_to_int(&data[count_byte], 2);
+		if (this->SD.date.byte.day > 31 || this->SD.date.byte.day < 0) { return ERROR; }
+
+		SD.date.byte.month = char_to_int(&data[count_byte+2], 2);
+		if (SD.date.byte.month > 12 || SD.date.byte.month < 0) { return ERROR; }
+
+		SD.date.byte.year = char_to_int(&data[count_byte+4], 4);
+		break;
+	}
+	// time
+	count_byte = cntr_it;
+	for (size_t i = 0x00; i < 100; i++) // Чтобы не получился бесконечный цикл
+	{
+		if (data[cntr_it++] != ';') continue;
+		if (cntr_it != 16) { return BYTE_COUNT_ERROR; }
+
+
+		this->SD.time.byte.hours = char_to_int(&data[count_byte], 2);
+		if (this->SD.time.byte.hours > 24 || this->SD.time.byte.hours < 0) { return ERROR; }
+
+		this->SD.time.byte.minutes = char_to_int(&data[count_byte + 2], 2);
+		if (this->SD.time.byte.minutes > 60 || this->SD.time.byte.minutes < 0) { return ERROR; }
+
+		this->SD.time.byte.seconds = char_to_int(&data[count_byte + 4], 2);
+		if (this->SD.time.byte.seconds > 60 || this->SD.time.byte.seconds < 0) { return ERROR; }
+		break;
+	}
+	// N
+	count_byte = cntr_it;
+	
 	for (size_t i = 0; i < 100; i++)
 	{
-		value |= (uint_least64_t)(data[i] - 0x30) << 8;
-		if (data[i] != ';') continue;
-		size_t ptr_i = 0x00;
-		// Думал это все забабахать через массив указатель на void но не вышло. 
-		switch (state)
-		{
-		case 0:
-			SD.date.word = value;
-			break;
-		case 1:
-
-			break;
-		case 2:
-
-			break;
-		case 3:
-
-			break;
-		case 4:
-
-			break;
-		case 5:
-
-			break;
-		case 6:
-
-			break;
-		case 7:
-
-			break;
-		case 8:
-
-			break;
-		case 9:
-
-			break;
-		default:
-			break;
-		}
+		_data[i] = data[i + count_byte];
+		if (data[cntr_it++] != ';') {continue;}
+		if (cntr_it != 16 + 10) { return BYTE_COUNT_ERROR; }
+		this->SD.latitude.lat1 = char_to_float(_data, i);
+		this->SD.latitude.lat2 = data[cntr_it++];
+		break;
 	}
+	count_byte = ++cntr_it;
+	memset(_data,0, sizeof(_data));
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		_data[i] = data[i + count_byte];
+		if (data[cntr_it++] != ';') {continue;}
+		if (cntr_it != 28 + 11) { return BYTE_COUNT_ERROR; }
+
+		this->SD.longitude.lon1 = char_to_float(_data, i);
+		this->SD.longitude.lon2 = data[cntr_it++];
+		break;
+	}
+
 	return ERROR;
 }
 
@@ -90,4 +111,38 @@ mistakes cParser::parser_M(const char *const data)
 	}
 	memset(&M, 0, sizeof(M));
 	return ERROR;
+}
+
+int cParser::char_to_int(const char * const chr, char count)
+{
+	int k = pow(10, count - 1);
+	int result = 0x00;
+	for (size_t i = 0; i < count; i++)
+	{
+		result += k * (chr[i] - '0');
+		k /= 10;
+	}
+	return result;
+}
+
+float cParser::char_to_float(const char * const chr, char count)
+{
+	float result = 0x00;
+	double k = 0x00;
+	for (size_t i = 0; i < count; i++)
+	{
+		if (chr[i] != '.') continue;
+		k = pow(10, i - 1);
+		break;
+	}
+
+	for (size_t i = 0; i < count; i++)
+	{
+		if (chr[i] == '.') continue;
+		if (chr[i] == ';') break;
+		result += k * (chr[i] - '0');
+		k /= 10;
+	}
+	
+	return result;
 }
