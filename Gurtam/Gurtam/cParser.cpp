@@ -134,26 +134,27 @@ mistakes cParser::parser_SD2(const char * const data)
 		if (data[i] == ';') { after_dot_position[count_dot++] = i + 1; }
 		if (data[i] == '\r') {
 			if (count_dot != 9) { return ERROR; }
+			after_dot_position[count_dot++] = i + 1;
 			break;
 		}
 	}
 	int byte = 2;
-	this->SD.date.byte.day = char_to_int(data, byte);
-	this->SD.date.byte.month = char_to_int(&data[byte], byte);
+	this->SD.date.byte.day		= char_to_int(data, byte);
+	this->SD.date.byte.month	= char_to_int(&data[byte], byte);
 	byte = 4;
-	this->SD.date.byte.year = char_to_int(&data[byte], byte);
+	this->SD.date.byte.year		 = char_to_int(&data[byte], byte);
 	byte = 2;
-	this->SD.time.byte.hours = char_to_int(&data[after_dot_position[count_byte]], byte);
-	this->SD.time.byte.minutes = char_to_int(&data[after_dot_position[count_byte] + byte], byte);
-	this->SD.time.byte.seconds = char_to_int(&data[after_dot_position[count_byte++] + 2 * byte], byte);
-	this->SD.latitude.lat1 = char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
-	this->SD.latitude.lat2 = data[after_dot_position[count_byte++]];
-	this->SD.longitude.lon1 = char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
-	this->SD.longitude.lon2 = data[after_dot_position[count_byte++]];
-	this->SD.other.speed = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
-	this->SD.other.course = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
-	this->SD.other.height = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
-
+	this->SD.time.byte.hours	= char_to_int(&data[after_dot_position[count_byte]], byte);
+	this->SD.time.byte.minutes	= char_to_int(&data[after_dot_position[count_byte] + byte], byte);
+	this->SD.time.byte.seconds	= char_to_int(&data[after_dot_position[count_byte++] + 2 * byte], byte);
+	this->SD.latitude.lat1		= char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
+	this->SD.latitude.lat2		= data[after_dot_position[count_byte++]];
+	this->SD.longitude.lon1		= char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
+	this->SD.longitude.lon2		= data[after_dot_position[count_byte++]];
+	this->SD.other.speed		= char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
+	this->SD.other.course		= char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
+	this->SD.other.height		= char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
+	this->SD.other.sats			= char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
 	return SD_PACK_ACCEPTERD;
 }
 
