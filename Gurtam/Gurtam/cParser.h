@@ -71,15 +71,15 @@ public:
 	};
 	~cParser();
 	mistakes line_processing(const char * const data);
-
-
+	// так нельзя делать но да простят меня
+	str_SD SD;
+	str_M	M;
 
 	char *getM() const { return (char*)M.array; }
 private:
 
 	
-	str_SD SD;
-	str_M	M;
+	
 	mistakes check_sum() { return SUCCESS; };
 	mistakes parser_SD(const char *const data);
 	mistakes parser_M(const char *const data);

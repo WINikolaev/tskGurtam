@@ -32,13 +32,29 @@ int main()
 	}
 	case SD_PACK_ACCEPTERD:
 		std::cout << "SD_PACK_ACCEPTERD: " << std::endl;
+		std::cout << "day: "<< parser->SD.date.byte.day << std::endl;
+		std::cout << "month: " << parser->SD.date.byte.month << std::endl;
+		std::cout << "year: " << parser->SD.date.byte.year << std::endl;
+
+		std::cout << "hours: " << parser->SD.time.byte.hours << std::endl;
+		std::cout << "minutes: " << parser->SD.time.byte.minutes << std::endl;
+		std::cout << "seconds: " << parser->SD.time.byte.seconds << std::endl;
+
+		std::cout << "latitude: " << parser->SD.latitude.lat1 << parser->SD.latitude.lat2 << std::endl;
+		std::cout << "longitude: " << parser->SD.longitude.lon1 << parser->SD.longitude.lon2 << std::endl;
+
+		std::cout << "course: " << parser->SD.other.course	<< std::endl;
+		std::cout << "height: " << parser->SD.other.height	<< std::endl;
+		std::cout << "sats: " << parser->SD.other.sats		<< std::endl;
+		std::cout << "speed: " << parser->SD.other.speed	<< std::endl;
+
 		break;
 	default:
 		break;
 	}
 
 
-
+	std::cout << "\\\\\\\\\\\\\\////////////////" << std::endl;
 	std::cout << "Задача 2" << std::endl;
 	int first  = (task2 & 0x0000FF00) >> 8;
 	std::cout << "Первый параметр: " << first << std::endl;
