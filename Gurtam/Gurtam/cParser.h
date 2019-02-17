@@ -82,10 +82,12 @@ private:
 	
 	mistakes check_sum() { return SUCCESS; };
 	mistakes parser_SD(const char *const data);
+	mistakes parser_SD2(const char *const data);
 	mistakes parser_M(const char *const data);
 
 	int   char_to_int(const char *const chr, char count);
 	float char_to_float(const char * const chr, char count);
+	// не работает собака 
 	const void *ptr_for_part_SD[10] = {
 				&this->SD.date.word,
 				&this->SD.time.word,

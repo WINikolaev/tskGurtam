@@ -16,7 +16,7 @@ mistakes cParser::line_processing(const char *const data)
 		// looking for a second pointer
 		if (data[i] != '#') continue;
 		
-		if (!strncmp(data, "#SD#", i))	{ return this->parser_SD(&data[++i]);}
+		if (!strncmp(data, "#SD#", i))	{ return this->parser_SD2(&data[++i]);}
 		if (!strncmp(data, "#M#", i))	{ return this->parser_M(&data[++i]); }
 		return TYPE_ERROR;
 	}
@@ -119,6 +119,40 @@ mistakes cParser::parser_SD(const char *const data)
 		this->SD.other.sats = char_to_int(&data[count_byte], i);
 		break;
 	}
+
+	return SD_PACK_ACCEPTERD;
+}
+
+
+// и понеслась....вторая реализация...в поисках более элегантного метада
+mistakes cParser::parser_SD2(const char * const data)
+{
+	int count_dot{ 0 }, count_byte{ 0 };
+	char after_dot_position[10]; // Будет указаывать на позицию полсе точки с запятой
+	for (size_t i = 0; i < 100; i++)
+	{
+		if (data[i] == ';') { after_dot_position[count_dot++] = i + 1; }
+		if (data[i] == '\r') {
+			if (count_dot != 9) { return ERROR; }
+			break;
+		}
+	}
+	int byte = 2;
+	this->SD.date.byte.day = char_to_int(data, byte);
+	this->SD.date.byte.month = char_to_int(&data[byte], byte);
+	byte = 4;
+	this->SD.date.byte.year = char_to_int(&data[byte], byte);
+	byte = 2;
+	this->SD.time.byte.hours = char_to_int(&data[after_dot_position[count_byte]], byte);
+	this->SD.time.byte.minutes = char_to_int(&data[after_dot_position[count_byte] + byte], byte);
+	this->SD.time.byte.seconds = char_to_int(&data[after_dot_position[count_byte++] + 2 * byte], byte);
+	this->SD.latitude.lat1 = char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
+	this->SD.latitude.lat2 = data[after_dot_position[count_byte++]];
+	this->SD.longitude.lon1 = char_to_float(&data[after_dot_position[count_byte++]], after_dot_position[count_byte] - after_dot_position[count_byte - 1]);
+	this->SD.longitude.lon2 = data[after_dot_position[count_byte++]];
+	this->SD.other.speed = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
+	this->SD.other.course = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
+	this->SD.other.height = char_to_int(&data[after_dot_position[count_byte++]], (after_dot_position[count_byte] - after_dot_position[count_byte - 1] - 1));
 
 	return SD_PACK_ACCEPTERD;
 }
